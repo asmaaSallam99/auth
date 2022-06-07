@@ -1,0 +1,43 @@
+{
+    "content": [
+        { 
+            "id": 1,
+            "name":"Chair",
+"nameAr": "كرسى",
+"parent_id": null
+},
+{ "id": 2,
+"name":"Table",
+"nameAr": "ترابيذة",
+"parent_id": null
+},
+{ "id": 3,
+"name":"Food Chair",
+"nameAr": "كرسى الطعام"
+,"parent_id": 1
+},
+
+{ "id": 4,
+"name":"Food Table",
+"nameAr": "ترابيذة سفرة",
+"parent_id": 2
+},
+{ "id": 5,
+"name":"Bar Table",
+"nameAr": "ترابيذة بار",
+"parent_id": 2
+},
+
+{ "id": 6,
+"name":"Bar Chair",
+"nameAr": "كرسى بار",
+"parent_id": 1
+},
+{ "id": 7,
+    "name":"Side Chair",
+    "nameAr": "كرسى جانبى",
+    "parent_id": 1
+    }
+
+]
+}
