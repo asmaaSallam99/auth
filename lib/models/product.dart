@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-class product {
+class Product {
   int id;
   String name;
   String nameAr;
@@ -8,7 +8,7 @@ class product {
   double price;
   int category_id;
 
-  product({
+  Product({
     required this.id,
     required this.name,
     required this.nameAr,
@@ -16,8 +16,8 @@ class product {
     required this.image,
     required this.category_id,
   });
-  factory product.fromJson(Map<String, dynamic> json) {
-    return product(
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
         id: json['id'],
         name: json['name'],
         nameAr: json['nameAr'],

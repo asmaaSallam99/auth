@@ -30,59 +30,7 @@ class _Categories extends State<Categories> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          leading: Icon(
-            Icons.menu,
-            color: Colors.black,
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Icon(
-                Icons.search,
-                color: Colors.black,
-              ),
-            )
-          ],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: currentIndex,
-          onTap: (index) {
-            setState(() {
-              currentIndex = index;
-            });
-          },
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.widgets_rounded),
-              label: 'category',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.camera_alt,
-                size: 50,
-              ),
-              label: 'Camera',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.production_quantity_limits),
-              label: 'cart',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-        ),
-        body: FutureBuilder(
+    return FutureBuilder(
           future: CategoryDataProvider().getCategories(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
@@ -159,7 +107,7 @@ class _Categories extends State<Categories> {
               return CircularProgressIndicator();
             }
           },
-        ));
+        );
   }
 }
 

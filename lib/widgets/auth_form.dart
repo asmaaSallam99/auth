@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:homz/screens/base_view.dart';
 import 'package:homz/screens/categories.dart';
 import 'package:homz/widgets/auth_titel.dart';
 
@@ -235,7 +236,7 @@ class _AuthformState extends State<Authform> {
                       if (_formKey.currentState!.validate()) {}
                     } else {
                       Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => Categories()));
+                          builder: (context) => BaseView()));
                     }
                   },
                 ),

@@ -4,7 +4,7 @@ import 'package:homz/models/product.dart';
 class Productdetils extends StatelessWidget {
   const Productdetils({Key? key, required this.prod}) : super(key: key);
 
-  final product prod;
+  final Product prod;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class Productdetils extends StatelessWidget {
                     prod.nameAr,
                     style: TextStyle(color: Colors.black),
                   ),
-                   const Icon(
+                  const Icon(
                     Icons.arrow_right,
                     color: Colors.black,
                   ),

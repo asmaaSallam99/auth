@@ -3,6 +3,7 @@ import 'package:homz/data_provider/product_data_provider.dart';
 import 'package:homz/models/category.dart';
 import 'package:homz/models/product.dart';
 import 'package:homz/screens/product_detils.dart';
+import 'package:homz/widgets/product_card.dart';
 
 class Productlist extends StatelessWidget {
   const Productlist({Key? key, required this.category}) : super(key: key);
@@ -45,7 +46,7 @@ class Productlist extends StatelessWidget {
           ),
         ],
       ),
-      body: FutureBuilder<List<product>>(
+      body: FutureBuilder<List<Product>>(
         future: ProductsDataProvider().getProductsByCategory(category.id),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -61,40 +62,7 @@ class Productlist extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.all(20),
                 itemCount: snapshot.data!.length,
-                itemBuilder: (_, i) => GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            Productdetils(prod: snapshot.data![i]),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xffd4dad1),
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: Image.network(
-                              snapshot.data![i].image,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(
-                                Icons.image,
-                                size: 50,
-                              ),
-                            ),
-                          ),
-                          Text(snapshot.data![i].nameAr),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                itemBuilder: (_, i) => ProductItem(product: snapshot.data![i]),
               );
             } else {
               return Center(
