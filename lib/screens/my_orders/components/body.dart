@@ -219,7 +219,7 @@ class _BodyState extends State<Body> {
                   child: FlatButton(
                     onPressed: () async {
                       String currentUserUid =
-                          AuthentificationService().currentUser.uid;
+                          AuthenticationService().currentUser.uid;
                       Review prevReview;
                       try {
                         prevReview = await ProductDatabaseHelper()

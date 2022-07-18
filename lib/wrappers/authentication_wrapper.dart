@@ -9,7 +9,7 @@ class AuthenticationWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: AuthentificationService().authStateChanges,
+      stream: AuthenticationService().authStateChanges,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return HomeScreen();

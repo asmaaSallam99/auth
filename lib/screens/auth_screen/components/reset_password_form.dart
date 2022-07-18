@@ -144,7 +144,7 @@ class _ResetPasswordFormState extends State<ResetPasswordForm> {
       String snackBarMessage;
       try {
         final resultFuture =
-            AuthentificationService().resetPasswordForEmail(emailInput);
+            AuthenticationService().resetPasswordForEmail(emailInput);
         resultFuture.then((value) => resultStatus = value);
         resultStatus = await showDialog(
           context: context,

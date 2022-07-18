@@ -57,14 +57,14 @@ class ProductActionsSection extends StatelessWidget {
       builder: (context, productDetails, child) {
         return InkWell(
           onTap: () async {
-            bool allowed = AuthentificationService().currentUserVerified;
+            bool allowed = AuthenticationService().currentUserVerified;
             if (!allowed) {
               final reverify = await showConfirmationDialog(context,
                   "You haven't verified your email address. This action is only allowed for verified users.",
                   positiveResponse: "Resend verification email",
                   negativeResponse: "Go back");
               if (reverify) {
-                final future = AuthentificationService()
+                final future = AuthenticationService()
                     .sendVerificationEmailToCurrentUser();
                 await showDialog(
                   context: context,

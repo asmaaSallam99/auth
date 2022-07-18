@@ -20,7 +20,7 @@ class AppReviewDatabaseHelper {
   }
 
   Future<bool> editAppReview(AppReview appReview) async {
-    final uid = AuthentificationService().currentUser.uid;
+    final uid = AuthenticationService().currentUser.uid;
     final docRef = firestore.collection(APP_REVIEW_COLLECTION_NAME).doc(uid);
     final docData = await docRef.get();
     if (docData.exists) {
@@ -32,7 +32,7 @@ class AppReviewDatabaseHelper {
   }
 
   Future<AppReview> getAppReviewOfCurrentUser() async {
-    final uid = AuthentificationService().currentUser.uid;
+    final uid = AuthenticationService().currentUser.uid;
     final docRef = firestore.collection(APP_REVIEW_COLLECTION_NAME).doc(uid);
     final docData = await docRef.get();
     if (docData.exists) {

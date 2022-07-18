@@ -135,7 +135,7 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
   Future<void> changePasswordButtonCallback() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      final AuthentificationService authService = AuthentificationService();
+      final AuthenticationService authService = AuthenticationService();
       bool currentPasswordValidation = await authService
           .verifyCurrentUserPassword(currentPasswordController.text);
       if (currentPasswordValidation == false) {

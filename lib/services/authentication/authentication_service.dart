@@ -9,7 +9,7 @@ import 'package:homz/services/database/user_database_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
-class AuthentificationService {
+class AuthenticationService {
   static const String USER_NOT_FOUND_EXCEPTION_CODE = "user-not-found";
   static const String WRONG_PASSWORD_EXCEPTION_CODE = "wrong-password";
   static const String TOO_MANY_REQUESTS_EXCEPTION_CODE = 'too-many-requests';
@@ -31,9 +31,9 @@ class AuthentificationService {
 
   FirebaseAuth _firebaseAuth;
 
-  AuthentificationService._privateConstructor();
-  static AuthentificationService _instance =
-      AuthentificationService._privateConstructor();
+  AuthenticationService._privateConstructor();
+  static AuthenticationService _instance =
+      AuthenticationService._privateConstructor();
 
   FirebaseAuth get firebaseAuth {
     if (_firebaseAuth == null) {
@@ -42,7 +42,7 @@ class AuthentificationService {
     return _firebaseAuth;
   }
 
-  factory AuthentificationService() {
+  factory AuthenticationService() {
     return _instance;
   }
 

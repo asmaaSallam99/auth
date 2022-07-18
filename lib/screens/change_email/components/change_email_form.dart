@@ -94,7 +94,7 @@ class _ChangeEmailFormState extends State<ChangeEmailForm> {
 
   Widget buildCurrentEmailFormField() {
     return StreamBuilder<User>(
-      stream: AuthentificationService().userChanges,
+      stream: AuthenticationService().userChanges,
       builder: (context, snapshot) {
         String currentEmail;
         if (snapshot.hasData && snapshot.data != null)
@@ -145,7 +145,7 @@ class _ChangeEmailFormState extends State<ChangeEmailForm> {
   Future<void> changeEmailButtonCallback() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      final AuthentificationService authService = AuthentificationService();
+      final AuthenticationService authService = AuthenticationService();
       bool passwordValidation =
           await authService.verifyCurrentUserPassword(passwordController.text);
       if (passwordValidation) {

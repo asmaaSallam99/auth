@@ -143,7 +143,7 @@ class ProductDatabaseHelper {
   }
 
   Future<String> addUsersProduct(Product product) async {
-    String uid = AuthentificationService().currentUser.uid;
+    String uid = AuthenticationService().currentUser.uid;
     final productMap = product.toMap();
     product.owner = uid;
     final productsCollectionReference =
@@ -194,7 +194,7 @@ class ProductDatabaseHelper {
   }
 
   Future<List<String>> get usersProductsList async {
-    String uid = AuthentificationService().currentUser.uid;
+    String uid = AuthenticationService().currentUser.uid;
     final productsCollectionReference =
         firestore.collection(PRODUCTS_COLLECTION_NAME);
     final querySnapshot = await productsCollectionReference

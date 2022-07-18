@@ -89,7 +89,7 @@ class _ChangeDisplayNameFormState extends State<ChangeDisplayNameForm> {
 
   Widget buildCurrentDisplayNameField() {
     return StreamBuilder<User>(
-      stream: AuthentificationService().userChanges,
+      stream: AuthenticationService().userChanges,
       builder: (context, snapshot) {
         String displayName;
         if (snapshot.hasData && snapshot.data != null)
@@ -114,7 +114,7 @@ class _ChangeDisplayNameFormState extends State<ChangeDisplayNameForm> {
   Future<void> changeDisplayNameButtonCallback() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      await AuthentificationService()
+      await AuthenticationService()
           .updateCurrentUserDisplayName(newDisplayNameController.text);
       print("Display Name updated to ${newDisplayNameController.text} ...");
     }

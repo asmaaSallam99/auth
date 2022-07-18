@@ -399,7 +399,7 @@ class _AuthFormState extends State<AuthForm> {
   Future<void> signInButtonCallback() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      final AuthentificationService authService = AuthentificationService();
+      final AuthenticationService authService = AuthenticationService();
       bool signInStatus = false;
       String snackBarMessage;
       try {
@@ -448,7 +448,7 @@ class _AuthFormState extends State<AuthForm> {
   Future<void> signUpButtonCallback() async {
     if (_formKey.currentState.validate()) {
       // goto complete profile page
-      final AuthentificationService authService = AuthentificationService();
+      final AuthenticationService authService = AuthenticationService();
       bool signUpStatus = false;
       String snackBarMessage;
       try {

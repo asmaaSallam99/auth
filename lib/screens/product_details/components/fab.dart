@@ -20,7 +20,7 @@ class AddToCartFAB extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
       onPressed: () async {
-        bool allowed = AuthentificationService().currentUserVerified;
+        bool allowed = AuthenticationService().currentUserVerified;
         if (!allowed) {
           final reverify = await showConfirmationDialog(context,
               "You haven't verified your email address. This action is only allowed for verified users.",
@@ -28,7 +28,7 @@ class AddToCartFAB extends StatelessWidget {
               negativeResponse: "Go back");
           if (reverify) {
             final future =
-                AuthentificationService().sendVerificationEmailToCurrentUser();
+                AuthenticationService().sendVerificationEmailToCurrentUser();
             await showDialog(
               context: context,
               builder: (context) {
