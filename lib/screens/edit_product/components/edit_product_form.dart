@@ -22,6 +22,7 @@ import '../../../size_config.dart';
 
 class EditProductForm extends StatefulWidget {
   final Product product;
+
   EditProductForm({
     Key key,
     this.product,
@@ -686,7 +687,7 @@ class _EditProductFormState extends State<EditProductForm> {
       return;
     }
     String path;
-    String snackbarMessage;
+    String snackBarMessage;
     try {
       path = await choseImageFromLocalFiles(context);
       if (path == null) {
@@ -694,16 +695,16 @@ class _EditProductFormState extends State<EditProductForm> {
       }
     } on LocalFileHandlingException catch (e) {
       Logger().i("Local File Handling Exception: $e");
-      snackbarMessage = e.toString();
+      snackBarMessage = e.toString();
     } catch (e) {
       Logger().i("Unknown Exception: $e");
-      snackbarMessage = e.toString();
+      snackBarMessage = e.toString();
     } finally {
-      if (snackbarMessage != null) {
-        Logger().i(snackbarMessage);
+      if (snackBarMessage != null) {
+        Logger().i(snackBarMessage);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(snackbarMessage),
+            content: Text(snackBarMessage),
           ),
         );
       }

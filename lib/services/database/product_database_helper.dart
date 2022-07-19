@@ -6,15 +6,19 @@ import 'package:enum_to_string/enum_to_string.dart';
 
 class ProductDatabaseHelper {
   static const String PRODUCTS_COLLECTION_NAME = "products";
-  static const String REVIEWS_COLLECTOIN_NAME = "reviews";
+  static const String REVIEWS_COLLECTION_NAME = "reviews";
 
   ProductDatabaseHelper._privateConstructor();
+
   static ProductDatabaseHelper _instance =
       ProductDatabaseHelper._privateConstructor();
+
   factory ProductDatabaseHelper() {
     return _instance;
   }
+
   FirebaseFirestore _firebaseFirestore;
+
   FirebaseFirestore get firestore {
     if (_firebaseFirestore == null) {
       _firebaseFirestore = FirebaseFirestore.instance;
@@ -60,7 +64,7 @@ class ProductDatabaseHelper {
     final reviewesCollectionRef = firestore
         .collection(PRODUCTS_COLLECTION_NAME)
         .doc(productId)
-        .collection(REVIEWS_COLLECTOIN_NAME);
+        .collection(REVIEWS_COLLECTION_NAME);
     final reviewDoc = reviewesCollectionRef.doc(review.reviewerUid);
     if ((await reviewDoc.get()).exists == false) {
       reviewDoc.set(review.toMap());
@@ -82,7 +86,7 @@ class ProductDatabaseHelper {
     final productDocRef =
         firestore.collection(PRODUCTS_COLLECTION_NAME).doc(productId);
     final ratingsCount =
-        (await productDocRef.collection(REVIEWS_COLLECTOIN_NAME).get())
+        (await productDocRef.collection(REVIEWS_COLLECTION_NAME).get())
             .docs
             .length;
     final productDoc = await productDocRef.get();
@@ -104,7 +108,7 @@ class ProductDatabaseHelper {
     final reviewesCollectionRef = firestore
         .collection(PRODUCTS_COLLECTION_NAME)
         .doc(productId)
-        .collection(REVIEWS_COLLECTOIN_NAME);
+        .collection(REVIEWS_COLLECTION_NAME);
     final reviewDoc = await reviewesCollectionRef.doc(reviewId).get();
     if (reviewDoc.exists) {
       return Review.fromMap(reviewDoc.data(), id: reviewDoc.id);
@@ -117,11 +121,11 @@ class ProductDatabaseHelper {
     final reviewesQuerySnapshot = firestore
         .collection(PRODUCTS_COLLECTION_NAME)
         .doc(productId)
-        .collection(REVIEWS_COLLECTOIN_NAME)
+        .collection(REVIEWS_COLLECTION_NAME)
         .get()
         .asStream();
     await for (final querySnapshot in reviewesQuerySnapshot) {
-      List<Review> reviews = List<Review>();
+      List<Review> reviews = <Review>[];
       for (final reviewDoc in querySnapshot.docs) {
         Review review = Review.fromMap(reviewDoc.data(), id: reviewDoc.id);
         reviews.add(review);
@@ -185,7 +189,7 @@ class ProductDatabaseHelper {
         .where(Product.PRODUCT_TYPE_KEY,
             isEqualTo: EnumToString.convertToString(productType))
         .get();
-    List productsId = List<String>();
+    List productsId = <String>[];
     for (final product in queryResult.docs) {
       final id = product.id;
       productsId.add(id);
@@ -200,7 +204,7 @@ class ProductDatabaseHelper {
     final querySnapshot = await productsCollectionReference
         .where(Product.OWNER_KEY, isEqualTo: uid)
         .get();
-    List usersProducts = List<String>();
+    List usersProducts = <String>[];
     querySnapshot.docs.forEach((doc) {
       usersProducts.add(doc.id);
     });
@@ -209,7 +213,7 @@ class ProductDatabaseHelper {
 
   Future<List<String>> get allProductsList async {
     final products = await firestore.collection(PRODUCTS_COLLECTION_NAME).get();
-    List productsId = List<String>();
+    List productsId = <String>[];
     for (final product in products.docs) {
       final id = product.id;
       productsId.add(id);
@@ -228,6 +232,16 @@ class ProductDatabaseHelper {
 
   String getPathForProductImage(String id, int index) {
     String path = "products/images/$id";
+    return path + "_$index";
+  }
+
+  String getPathForProductModelSource(String id, int index) {
+    String path = "products/models/sources/$id";
+    return path + "_$index";
+  }
+
+  String getPathForProductModelTexture(String id, int index) {
+    String path = "products/models/textures/$id";
     return path + "_$index";
   }
 }
