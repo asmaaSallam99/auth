@@ -1,47 +1,69 @@
-import 'package:homz/models/Product.dart';
 import 'package:flutter/material.dart';
+import 'package:homz/models/Product.dart';
 
-enum ImageType {
+enum FileType {
   local,
   network,
 }
 
-class CustomImage {
-  final ImageType imgType;
+class CustomFile {
+  final FileType fileType;
   final String path;
-  CustomImage({this.imgType = ImageType.local, @required this.path});
+
+  CustomFile({this.fileType = FileType.local, @required this.path});
+
   @override
   String toString() {
-    return "Instance of Custom Image: {imgType: $imgType, path: $path}";
+    return "Instance of Custom File: {fileType: $fileType, path: $path}";
   }
 }
 
 class ProductDetails extends ChangeNotifier {
-  List<CustomImage> _selectedImages = List<CustomImage>();
-  ProductType _productType;
-  List<String> _searchTags = List<String>();
+  List<CustomFile> _selectedImages = <CustomFile>[];
+  CustomFile _selectedModelSrc, _selectedModelTexture;
 
-  List<CustomImage> get selectedImages {
+  ProductType _productType;
+  List<String> _searchTags = <String>[];
+
+  List<CustomFile> get selectedImages {
     return _selectedImages;
   }
 
-  set initialSelectedImages(List<CustomImage> images) {
+  CustomFile get selectedModelSrc {
+    return _selectedModelSrc;
+  }
+
+  CustomFile get selectedModelTexture {
+    return _selectedModelTexture;
+  }
+
+  set initialSelectedImages(List<CustomFile> images) {
     _selectedImages = images;
   }
 
-  set selectedImages(List<CustomImage> images) {
+  set selectedImages(List<CustomFile> images) {
     _selectedImages = images;
     notifyListeners();
   }
 
-  void setSelectedImageAtIndex(CustomImage image, int index) {
+  set selectedModelSrc(CustomFile ModelSrc) {
+    _selectedModelSrc = ModelSrc;
+    notifyListeners();
+  }
+
+  set selectedModelTexture(CustomFile ModelTexture) {
+    _selectedModelTexture = ModelTexture;
+    notifyListeners();
+  }
+
+  void setSelectedImageAtIndex(CustomFile image, int index) {
     if (index < _selectedImages.length) {
       _selectedImages[index] = image;
       notifyListeners();
     }
   }
 
-  void addNewSelectedImage(CustomImage image) {
+  void addNewSelectedImage(CustomFile image) {
     _selectedImages.add(image);
     notifyListeners();
   }

@@ -1,5 +1,7 @@
-import 'package:homz/models/Model.dart';
 import 'package:enum_to_string/enum_to_string.dart';
+import 'package:homz/models/Model.dart';
+
+import 'unity_model.dart';
 
 enum ProductType {
   Bed,
@@ -23,6 +25,7 @@ class Product extends Model {
   static const String OWNER_KEY = "owner";
   static const String PRODUCT_TYPE_KEY = "product_type";
   static const String SEARCH_TAGS_KEY = "search_tags";
+  static const String UNITY_MODEL_KEY = "unity_model";
 
   List<String> images;
   String title;
@@ -37,6 +40,7 @@ class Product extends Model {
   String owner;
   ProductType productType;
   List<String> searchTags;
+  UnityModel unityModel;
 
   Product(
     String id, {
@@ -52,6 +56,7 @@ class Product extends Model {
     this.seller,
     this.owner,
     this.searchTags,
+    this.unityModel,
   }) : super(id);
 
   int calculatePercentageDiscount() {
@@ -79,6 +84,9 @@ class Product extends Model {
       seller: map[SELLER_KEY],
       owner: map[OWNER_KEY],
       searchTags: map[SEARCH_TAGS_KEY].cast<String>(),
+      unityModel: (map[UNITY_MODEL_KEY] != null)
+          ? UnityModel.fromMap(map[UNITY_MODEL_KEY])
+          : null,
     );
   }
 
@@ -97,6 +105,7 @@ class Product extends Model {
       SELLER_KEY: seller,
       OWNER_KEY: owner,
       SEARCH_TAGS_KEY: searchTags,
+      UNITY_MODEL_KEY: unityModel != null ? unityModel.toMap() : null,
     };
 
     return map;
@@ -118,6 +127,7 @@ class Product extends Model {
       map[PRODUCT_TYPE_KEY] = EnumToString.convertToString(productType);
     if (owner != null) map[OWNER_KEY] = owner;
     if (searchTags != null) map[SEARCH_TAGS_KEY] = searchTags;
+    if (unityModel != null) map[UNITY_MODEL_KEY] = unityModel.toUpdateMap();
 
     return map;
   }

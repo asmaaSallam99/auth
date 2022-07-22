@@ -1,19 +1,21 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enum_to_string/enum_to_string.dart';
+import 'package:file_picker/file_picker.dart' hide FileType;
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_tags/flutter_tags.dart';
 import 'package:homz/components/async_progress_dialog.dart';
 import 'package:homz/components/default_button.dart';
 import 'package:homz/exceptions/local_files_handling/image_picking_exceptions.dart';
 import 'package:homz/exceptions/local_files_handling/local_file_handling_exception.dart';
 import 'package:homz/models/Product.dart';
+import 'package:homz/models/unity_model.dart';
 import 'package:homz/screens/edit_product/provider_models/ProductDetails.dart';
 import 'package:homz/services/database/product_database_helper.dart';
 import 'package:homz/services/firestore_files_access/firestore_files_access_service.dart';
 import 'package:homz/services/local_files_access/local_files_access_service.dart';
-import 'package:enum_to_string/enum_to_string.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_tags/flutter_tags.dart';
-import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -77,7 +79,7 @@ class _EditProductFormState extends State<EditProductForm> {
       final productDetails =
           Provider.of<ProductDetails>(context, listen: false);
       productDetails.initialSelectedImages = widget.product.images
-          .map((e) => CustomImage(imgType: ImageType.network, path: e))
+          .map((e) => CustomFile(fileType: FileType.network, path: e))
           .toList();
       productDetails.initialProductType = product.productType;
       productDetails.initSearchTags = product.searchTags ?? [];
@@ -93,6 +95,8 @@ class _EditProductFormState extends State<EditProductForm> {
         buildDescribeProductTile(context),
         SizedBox(height: getProportionateScreenHeight(10)),
         buildUploadImagesTile(context),
+        SizedBox(height: getProportionateScreenHeight(20)),
+        buildUploadModelTile(context),
         SizedBox(height: getProportionateScreenHeight(20)),
         buildProductTypeDropdown(),
         SizedBox(height: getProportionateScreenHeight(20)),
@@ -336,8 +340,8 @@ class _EditProductFormState extends State<EditProductForm> {
                         onTap: () {
                           addImageButtonCallback(index: index);
                         },
-                        child: productDetails.selectedImages[index].imgType ==
-                                ImageType.local
+                        child: productDetails.selectedImages[index].fileType ==
+                                FileType.local
                             ? Image.memory(
                                 File(productDetails.selectedImages[index].path)
                                     .readAsBytesSync())
@@ -350,6 +354,106 @@ class _EditProductFormState extends State<EditProductForm> {
               ],
             );
           },
+        ),
+      ],
+    );
+  }
+
+  Widget buildUploadModelTile(BuildContext context) {
+    return ExpansionTile(
+      title: Text(
+        "Upload Product Model",
+        style: Theme.of(context).textTheme.headline6,
+      ),
+      leading: Icon(Icons.model_training_rounded),
+      childrenPadding:
+          EdgeInsets.symmetric(vertical: getProportionateScreenHeight(20)),
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  Text(
+                    'Source',
+                    style: Theme.of(context).textTheme.subtitle2,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: IconButton(
+                        icon: Icon(
+                          Icons.file_upload_outlined,
+                        ),
+                        color: kTextColor,
+                        onPressed: () {
+                          addModelSrcButtonCallback();
+                        }),
+                  ),
+                  Consumer<ProductDetails>(
+                    builder: (context, productDetails, child) {
+                      return (productDetails.selectedModelSrc != null)
+                          ? SizedBox(
+                              width: 80,
+                              height: 80,
+                              child: Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    addModelSrcButtonCallback();
+                                  },
+                                  child: SvgPicture.asset(
+                                      'assets/icons/3d-file.svg'),
+                                ),
+                              ),
+                            )
+                          : Container();
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  Text(
+                    'Texture',
+                    style: Theme.of(context).textTheme.subtitle2,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: IconButton(
+                        icon: Icon(
+                          Icons.file_upload_outlined,
+                        ),
+                        color: kTextColor,
+                        onPressed: () {
+                          addModelTextureButtonCallback();
+                        }),
+                  ),
+                  Consumer<ProductDetails>(
+                    builder: (context, productDetails, child) {
+                      return (productDetails.selectedModelTexture != null)
+                          ? SizedBox(
+                              width: 80,
+                              height: 80,
+                              child: Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    addModelTextureButtonCallback();
+                                  },
+                                  child: SvgPicture.asset(
+                                      'assets/icons/texture.svg'),
+                                ),
+                              ),
+                            )
+                          : Container();
+                    },
+                  ),
+                ],
+              ),
+            )
+          ],
         ),
       ],
     );
@@ -513,7 +617,7 @@ class _EditProductFormState extends State<EditProductForm> {
     if (productDetails.selectedImages.length < 1) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Upload atleast One Image of Product"),
+          content: Text("Upload at least One Image of Product"),
         ),
       );
       return;
@@ -576,12 +680,19 @@ class _EditProductFormState extends State<EditProductForm> {
     }
     if (productId == null) return;
     bool allImagesUploaded = false;
+    bool modelUploaded = false;
     try {
       allImagesUploaded = await uploadProductImages(productId);
       if (allImagesUploaded == true) {
         snackbarMessage = "All images uploaded successfully";
       } else {
         throw "Some images couldn't be uploaded, please try again";
+      }
+      modelUploaded = await uploadProductModel(productId);
+      if (modelUploaded == true) {
+        snackbarMessage = "Product model uploaded successfully";
+      } else {
+        throw "Product couldn't be uploaded, please try again";
       }
     } on FirebaseException catch (e) {
       Logger().w("Firebase Exception: $e");
@@ -598,7 +709,7 @@ class _EditProductFormState extends State<EditProductForm> {
       );
     }
     List<String> downloadUrls = productDetails.selectedImages
-        .map((e) => e.imgType == ImageType.network ? e.path : null)
+        .map((e) => e.fileType == FileType.network ? e.path : null)
         .toList();
     bool productFinalizeUpdate = false;
     try {
@@ -609,6 +720,25 @@ class _EditProductFormState extends State<EditProductForm> {
         builder: (context) {
           return AsyncProgressDialog(
             updateProductFuture,
+            message: Text("Saving Product"),
+          );
+        },
+      );
+      UnityModel unityModel = UnityModel(
+        productDetails.selectedModelSrc.fileType == FileType.network
+            ? productDetails.selectedModelSrc.path
+            : null,
+        productDetails.selectedModelTexture.fileType == FileType.network
+            ? productDetails.selectedModelTexture.path
+            : null,
+      );
+      final updateProductModelFuture =
+          ProductDatabaseHelper().updateProductsModel(productId, unityModel);
+      productFinalizeUpdate = await showDialog(
+        context: context,
+        builder: (context) {
+          return AsyncProgressDialog(
+            updateProductModelFuture,
             message: Text("Saving Product"),
           );
         },
@@ -639,7 +769,7 @@ class _EditProductFormState extends State<EditProductForm> {
     bool allImagesUpdated = true;
     final productDetails = Provider.of<ProductDetails>(context, listen: false);
     for (int i = 0; i < productDetails.selectedImages.length; i++) {
-      if (productDetails.selectedImages[i].imgType == ImageType.local) {
+      if (productDetails.selectedImages[i].fileType == FileType.local) {
         print("Image being uploaded: " + productDetails.selectedImages[i].path);
         String downloadUrl;
         try {
@@ -663,7 +793,7 @@ class _EditProductFormState extends State<EditProductForm> {
         } finally {
           if (downloadUrl != null) {
             productDetails.selectedImages[i] =
-                CustomImage(imgType: ImageType.network, path: downloadUrl);
+                CustomFile(fileType: FileType.network, path: downloadUrl);
           } else {
             allImagesUpdated = false;
             ScaffoldMessenger.of(context).showSnackBar(
@@ -677,6 +807,86 @@ class _EditProductFormState extends State<EditProductForm> {
       }
     }
     return allImagesUpdated;
+  }
+
+  Future<bool> uploadProductModel(String productId) async {
+    bool modelUpdated = true;
+    final productDetails = Provider.of<ProductDetails>(context, listen: false);
+    if (productDetails.selectedModelSrc.fileType == FileType.local) {
+      print(
+          "model src being uploaded: " + productDetails.selectedModelSrc.path);
+      String downloadUrl;
+      try {
+        final imgUploadFuture = FirestoreFilesAccess().uploadFileToPath(
+            File(productDetails.selectedModelSrc.path),
+            ProductDatabaseHelper().getPathForProductModelSource(productId));
+        downloadUrl = await showDialog(
+          context: context,
+          builder: (context) {
+            return AsyncProgressDialog(
+              imgUploadFuture,
+              message: Text("Uploading model source"),
+            );
+          },
+        );
+      } on FirebaseException catch (e) {
+        Logger().w("Firebase Exception: $e");
+      } catch (e) {
+        Logger().w("Firebase Exception: $e");
+      } finally {
+        if (downloadUrl != null) {
+          productDetails.selectedModelSrc = CustomFile(
+            fileType: FileType.network,
+            path: downloadUrl,
+          );
+        } else {
+          modelUpdated = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Couldn't upload model source due to some issue"),
+            ),
+          );
+        }
+      }
+    }
+    if (productDetails.selectedModelTexture.fileType == FileType.local) {
+      print("model texture being uploaded: " +
+          productDetails.selectedModelTexture.path);
+      String downloadUrl;
+      try {
+        final imgUploadFuture = FirestoreFilesAccess().uploadFileToPath(
+            File(productDetails.selectedModelTexture.path),
+            ProductDatabaseHelper().getPathForProductModelTexture(productId));
+        downloadUrl = await showDialog(
+          context: context,
+          builder: (context) {
+            return AsyncProgressDialog(
+              imgUploadFuture,
+              message: Text("Uploading model texture"),
+            );
+          },
+        );
+      } on FirebaseException catch (e) {
+        Logger().w("Firebase Exception: $e");
+      } catch (e) {
+        Logger().w("Firebase Exception: $e");
+      } finally {
+        if (downloadUrl != null) {
+          productDetails.selectedModelTexture = CustomFile(
+            fileType: FileType.network,
+            path: downloadUrl,
+          );
+        } else {
+          modelUpdated = false;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Couldn't upload model texture due to some issue"),
+            ),
+          );
+        }
+      }
+    }
+    return modelUpdated;
   }
 
   Future<void> addImageButtonCallback({int index}) async {
@@ -714,10 +924,78 @@ class _EditProductFormState extends State<EditProductForm> {
     }
     if (index == null) {
       productDetails.addNewSelectedImage(
-          CustomImage(imgType: ImageType.local, path: path));
+          CustomFile(fileType: FileType.local, path: path));
     } else {
       productDetails.setSelectedImageAtIndex(
-          CustomImage(imgType: ImageType.local, path: path), index);
+          CustomFile(fileType: FileType.local, path: path), index);
     }
+  }
+
+  Future<void> addModelSrcButtonCallback() async {
+    final productDetails = Provider.of<ProductDetails>(context, listen: false);
+
+    String path;
+    String snackBarMessage;
+    try {
+      FilePickerResult result = await FilePicker.platform.pickFiles();
+      path = result.files.single.path;
+      if (path == null) {
+        throw LocalImagePickingUnknownReasonFailureException();
+      }
+    } on LocalFileHandlingException catch (e) {
+      Logger().i("Local File Handling Exception: $e");
+      snackBarMessage = e.toString();
+    } catch (e) {
+      Logger().i("Unknown Exception: $e");
+      snackBarMessage = e.toString();
+    } finally {
+      if (snackBarMessage != null) {
+        Logger().i(snackBarMessage);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(snackBarMessage),
+          ),
+        );
+      }
+    }
+    if (path == null) {
+      return;
+    }
+    productDetails.selectedModelSrc =
+        CustomFile(fileType: FileType.local, path: path);
+  }
+
+  Future<void> addModelTextureButtonCallback() async {
+    final productDetails = Provider.of<ProductDetails>(context, listen: false);
+
+    String path;
+    String snackBarMessage;
+    try {
+      FilePickerResult result = await FilePicker.platform.pickFiles();
+      path = result.files.single.path;
+      if (path == null) {
+        throw LocalImagePickingUnknownReasonFailureException();
+      }
+    } on LocalFileHandlingException catch (e) {
+      Logger().i("Local File Handling Exception: $e");
+      snackBarMessage = e.toString();
+    } catch (e) {
+      Logger().i("Unknown Exception: $e");
+      snackBarMessage = e.toString();
+    } finally {
+      if (snackBarMessage != null) {
+        Logger().i(snackBarMessage);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(snackBarMessage),
+          ),
+        );
+      }
+    }
+    if (path == null) {
+      return;
+    }
+    productDetails.selectedModelTexture =
+        CustomFile(fileType: FileType.local, path: path);
   }
 }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:homz/models/Product.dart';
 import 'package:homz/models/Review.dart';
+import 'package:homz/models/unity_model.dart';
 import 'package:homz/services/authentication/authentication_service.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 
@@ -230,18 +231,27 @@ class ProductDatabaseHelper {
     return true;
   }
 
+  Future<bool> updateProductsModel(
+      String productId, UnityModel model) async {
+    final Product updateProduct = Product(null, unityModel: model);
+    final docRef =
+        firestore.collection(PRODUCTS_COLLECTION_NAME).doc(productId);
+    await docRef.update(updateProduct.toUpdateMap());
+    return true;
+  }
+
   String getPathForProductImage(String id, int index) {
     String path = "products/images/$id";
     return path + "_$index";
   }
 
-  String getPathForProductModelSource(String id, int index) {
+  String getPathForProductModelSource(String id) {
     String path = "products/models/sources/$id";
-    return path + "_$index";
+    return path + "_model_src";
   }
 
-  String getPathForProductModelTexture(String id, int index) {
+  String getPathForProductModelTexture(String id) {
     String path = "products/models/textures/$id";
-    return path + "_$index";
+    return path + "_model_texture";
   }
 }
